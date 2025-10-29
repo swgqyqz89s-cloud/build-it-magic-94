@@ -1,4 +1,0 @@
-project_id = "limhyspxcdmuanludigy"
-
-[functions.generate-cover-letter]
-verify_jwt = false
