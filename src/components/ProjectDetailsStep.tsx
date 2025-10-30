@@ -5,24 +5,25 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { ChevronRight, FileText } from "lucide-react";
 
-export interface DetectedProject {
+export interface GapQuestion {
   id: string;
-  name: string;
-  description?: string;
+  question: string;
+  context?: string;
+  category: string;
 }
 
 interface ProjectDetailsStepProps {
-  detectedProjects: DetectedProject[];
-  onContinue: (projectDetails: Record<string, string>) => void;
+  gapQuestions: GapQuestion[];
+  onContinue: (answers: Record<string, string>) => void;
   onBack: () => void;
 }
 
-export const ProjectDetailsStep = ({ detectedProjects, onContinue, onBack }: ProjectDetailsStepProps) => {
-  const [projectDetails, setProjectDetails] = useState<Record<string, string>>({});
+export const ProjectDetailsStep = ({ gapQuestions, onContinue, onBack }: ProjectDetailsStepProps) => {
+  const [answers, setAnswers] = useState<Record<string, string>>({});
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onContinue(projectDetails);
+    onContinue(answers);
   };
 
   return (
@@ -31,36 +32,38 @@ export const ProjectDetailsStep = ({ detectedProjects, onContinue, onBack }: Pro
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <FileText className="h-6 w-6" />
-            Projekte in Ihrem CV erkannt
+            Optimierung Ihrer Bewerbung
           </CardTitle>
           <CardDescription>
-            Wir haben {detectedProjects.length} Projekt{detectedProjects.length !== 1 ? 'e' : ''} in Ihrem Lebenslauf gefunden. 
-            Fügen Sie weitere Details hinzu, um Ihr Bewerbungsschreiben zu optimieren.
+            Unsere KI hat {gapQuestions.length} Frage{gapQuestions.length !== 1 ? 'n' : ''} identifiziert, um Ihr Bewerbungsschreiben zu vervollständigen und zu optimieren.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
-            {detectedProjects.map((project, index) => (
-              <div key={project.id} className="space-y-3 p-4 border rounded-lg bg-muted/20">
+            {gapQuestions.map((question, index) => (
+              <div key={question.id} className="space-y-3 p-4 border rounded-lg bg-muted/20">
                 <div>
-                  <Label htmlFor={`project-${project.id}`} className="text-base font-semibold">
-                    {index + 1}. {project.name}
+                  <Label htmlFor={`question-${question.id}`} className="text-base font-semibold">
+                    {index + 1}. {question.question}
                   </Label>
-                  {project.description && (
-                    <p className="text-sm text-muted-foreground mt-1">{project.description}</p>
+                  {question.context && (
+                    <p className="text-sm text-muted-foreground mt-1">{question.context}</p>
                   )}
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Kategorie: {question.category}
+                  </p>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor={`details-${project.id}`} className="text-sm">
-                    Zusätzliche Informationen <span className="text-muted-foreground">(optional)</span>
+                  <Label htmlFor={`answer-${question.id}`} className="text-sm">
+                    Ihre Antwort <span className="text-muted-foreground">(optional)</span>
                   </Label>
                   <Textarea
-                    id={`details-${project.id}`}
-                    placeholder="z.B. Verwendete Technologien, Ergebnisse, Ihr Beitrag, besondere Erfolge..."
-                    value={projectDetails[project.id] || ""}
-                    onChange={(e) => setProjectDetails(prev => ({
+                    id={`answer-${question.id}`}
+                    placeholder="Ihre Antwort hier eingeben..."
+                    value={answers[question.id] || ""}
+                    onChange={(e) => setAnswers(prev => ({
                       ...prev,
-                      [project.id]: e.target.value
+                      [question.id]: e.target.value
                     }))}
                     rows={3}
                   />

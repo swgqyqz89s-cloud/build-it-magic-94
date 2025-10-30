@@ -3,46 +3,55 @@ import { Hero } from "@/components/Hero";
 import { CoverLetterForm } from "@/components/CoverLetterForm";
 import { CoverLetterResult } from "@/components/CoverLetterResult";
 import { MatchingData } from "@/components/MatchingScore";
-import { ProjectDetailsStep, DetectedProject } from "@/components/ProjectDetailsStep";
+import { ProjectDetailsStep, GapQuestion } from "@/components/ProjectDetailsStep";
 
 const Index = () => {
   const [generatedLetter, setGeneratedLetter] = useState<string | null>(null);
   const [matchingData, setMatchingData] = useState<MatchingData | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [formData, setFormData] = useState<any>(null);
-  const [detectedProjects, setDetectedProjects] = useState<DetectedProject[] | null>(null);
-  const [projectDetails, setProjectDetails] = useState<Record<string, string>>({});
+  const [gapQuestions, setGapQuestions] = useState<GapQuestion[] | null>(null);
+  const [questionAnswers, setQuestionAnswers] = useState<Record<string, string>>({});
 
   const handleFormSubmit = async (data: any) => {
-    // Simulate CV analysis to detect projects
-    const mockProjects: DetectedProject[] = [
+    // Simulate AI analysis to identify gaps and generate questions
+    const mockQuestions: GapQuestion[] = [
       {
         id: "1",
-        name: "E-Commerce Platform Entwicklung",
-        description: "Erwähnt im CV unter Berufserfahrung 2022-2023"
+        question: "Welche konkreten Erfolge oder Ergebnisse haben Sie in Ihrer letzten Position erreicht?",
+        context: "Quantifizierbare Erfolge machen Ihre Bewerbung überzeugender",
+        category: "Berufserfahrung"
       },
       {
         id: "2",
-        name: "Mobile App für Kundenservice",
-        description: "Erwähnt im CV unter Projekten"
+        question: "Warum interessieren Sie sich speziell für diese Position und unser Unternehmen?",
+        context: "Zeigen Sie Ihre Motivation und Recherche über das Unternehmen",
+        category: "Motivation"
       },
       {
         id: "3",
-        name: "Datenbank-Migration",
-        description: "Erwähnt im CV unter Technische Projekte"
+        question: "Welche relevanten technischen Kenntnisse oder Zertifizierungen haben Sie?",
+        context: "Ergänzen Sie spezifische Skills, die in der Stellenbeschreibung erwähnt werden",
+        category: "Qualifikationen"
+      },
+      {
+        id: "4",
+        question: "Können Sie ein Beispiel für eine komplexe Herausforderung nennen, die Sie gemeistert haben?",
+        context: "Konkrete Beispiele zeigen Ihre Problemlösungskompetenz",
+        category: "Erfahrung"
       }
     ];
     
     setFormData(data);
-    setDetectedProjects(mockProjects);
+    setGapQuestions(mockQuestions);
   };
 
-  const handleProjectDetailsContinue = async (details: Record<string, string>) => {
-    setProjectDetails(details);
-    await handleGenerate(formData, details);
+  const handleQuestionsContinue = async (answers: Record<string, string>) => {
+    setQuestionAnswers(answers);
+    await handleGenerate(formData, answers);
   };
 
-  const handleGenerate = async (data: any, projDetails: Record<string, string> = {}) => {
+  const handleGenerate = async (data: any, answers: Record<string, string> = {}) => {
     setIsGenerating(true);
     setGeneratedLetter(null);
     setMatchingData(null);
@@ -50,12 +59,12 @@ const Index = () => {
     // Simulate AI generation with delay
     await new Promise(resolve => setTimeout(resolve, 3000));
     
-    // Generate project summary from details
-    const projectSummary = Object.entries(projDetails)
-      .filter(([_, detail]) => detail.trim())
-      .map(([id, detail]) => {
-        const project = detectedProjects?.find(p => p.id === id);
-        return `Bei ${project?.name} konnte ich: ${detail}`;
+    // Generate additional context from answers
+    const additionalContext = Object.entries(answers)
+      .filter(([_, answer]) => answer.trim())
+      .map(([id, answer]) => {
+        const question = gapQuestions?.find(q => q.id === id);
+        return `${question?.category}: ${answer}`;
       })
       .join(' ');
 
@@ -64,7 +73,7 @@ const Index = () => {
 
 mit großem Interesse habe ich Ihre Stellenausschreibung für die Position als ${data.jobTitle || 'position'} gelesen und möchte mich hiermit bei Ihnen bewerben.
 
-${data.motivation ? data.motivation + '\n\n' : ''}Im Laufe meiner Karriere habe ich ein vielfältiges Kompetenzprofil entwickelt, das hervorragend zu den in Ihrer Stellenbeschreibung genannten Anforderungen passt.${projectSummary ? ' ' + projectSummary : ''} Meine Erfahrung hat mich befähigt, mich schnell anzupassen, kritisch zu denken und in schnelllebigen Umgebungen Ergebnisse zu liefern.
+${data.motivation ? data.motivation + '\n\n' : ''}Im Laufe meiner Karriere habe ich ein vielfältiges Kompetenzprofil entwickelt, das hervorragend zu den in Ihrer Stellenbeschreibung genannten Anforderungen passt.${additionalContext ? ' ' + additionalContext : ''} Meine Erfahrung hat mich befähigt, mich schnell anzupassen, kritisch zu denken und in schnelllebigen Umgebungen Ergebnisse zu liefern.
 
 Diese Position spricht mich besonders an, da sie die Möglichkeit bietet, an anspruchsvollen Projekten zu arbeiten, die mit meinen beruflichen Zielen übereinstimmen${data.careerGoals ? ': ' + data.careerGoals : ''}. Ich freue mich darauf, meine einzigartige Perspektive und Expertise in Ihr Unternehmen einzubringen.
 
@@ -125,13 +134,13 @@ Mit freundlichen Grüßen,
   const handleReset = () => {
     setGeneratedLetter(null);
     setMatchingData(null);
-    setDetectedProjects(null);
+    setGapQuestions(null);
     setFormData(null);
-    setProjectDetails({});
+    setQuestionAnswers({});
   };
 
   const handleBackToForm = () => {
-    setDetectedProjects(null);
+    setGapQuestions(null);
     setFormData(null);
   };
 
@@ -139,12 +148,12 @@ Mit freundlichen Grüßen,
     <div className="min-h-screen bg-background">
       <Hero />
       {!generatedLetter || !matchingData ? (
-        !detectedProjects ? (
+        !gapQuestions ? (
           <CoverLetterForm onGenerate={handleFormSubmit} isGenerating={isGenerating} />
         ) : (
           <ProjectDetailsStep 
-            detectedProjects={detectedProjects}
-            onContinue={handleProjectDetailsContinue}
+            gapQuestions={gapQuestions}
+            onContinue={handleQuestionsContinue}
             onBack={handleBackToForm}
           />
         )
