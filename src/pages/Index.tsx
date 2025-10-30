@@ -4,8 +4,11 @@ import { CoverLetterForm } from "@/components/CoverLetterForm";
 import { CoverLetterResult } from "@/components/CoverLetterResult";
 import { MatchingData } from "@/components/MatchingScore";
 import { ProjectDetailsStep, DetectedProject } from "@/components/ProjectDetailsStep";
+import { generateCoverLetter, generateMatchingAnalysis } from "@/services/ollamaService";
+import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
+  const { toast } = useToast();
   const [generatedLetter, setGeneratedLetter] = useState<string | null>(null);
   const [matchingData, setMatchingData] = useState<MatchingData | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -47,79 +50,61 @@ const Index = () => {
     setGeneratedLetter(null);
     setMatchingData(null);
     
-    // Simulate AI generation with delay
-    await new Promise(resolve => setTimeout(resolve, 3000));
-    
-    // Generate project summary from details
-    const projectSummary = Object.entries(projDetails)
-      .filter(([_, detail]) => detail.trim())
-      .map(([id, detail]) => {
-        const project = detectedProjects?.find(p => p.id === id);
-        return `Bei ${project?.name} konnte ich: ${detail}`;
-      })
-      .join(' ');
+    try {
+      // Generate project summary from details
+      const projectSummary = Object.entries(projDetails)
+        .filter(([_, detail]) => detail.trim())
+        .map(([id, detail]) => {
+          const project = detectedProjects?.find(p => p.id === id);
+          return `Bei ${project?.name} konnte ich: ${detail}`;
+        })
+        .join(' ');
 
-    // Mock generated cover letter
-    const mockLetter = `Sehr geehrte Damen und Herren,
+      // Mock CV text (in a real app, this would come from PDF parsing)
+      const cvText = "Erfahrener Softwareentwickler mit mehrjähriger Berufserfahrung in der Entwicklung von Web-Anwendungen. " + 
+                     (projectSummary || "");
 
-mit großem Interesse habe ich Ihre Stellenausschreibung für die Position als ${data.jobTitle || 'position'} gelesen und möchte mich hiermit bei Ihnen bewerben.
+      toast({
+        title: "Generierung gestartet",
+        description: "Das Anschreiben wird mit Ollama erstellt...",
+      });
 
-${data.motivation ? data.motivation + '\n\n' : ''}Im Laufe meiner Karriere habe ich ein vielfältiges Kompetenzprofil entwickelt, das hervorragend zu den in Ihrer Stellenbeschreibung genannten Anforderungen passt.${projectSummary ? ' ' + projectSummary : ''} Meine Erfahrung hat mich befähigt, mich schnell anzupassen, kritisch zu denken und in schnelllebigen Umgebungen Ergebnisse zu liefern.
+      // Generate cover letter with Ollama
+      const letter = await generateCoverLetter(
+        data.jobTitle || "",
+        data.jobDescription,
+        cvText,
+        data.motivation,
+        data.tone,
+        data.careerGoals,
+        projectSummary
+      );
 
-Diese Position spricht mich besonders an, da sie die Möglichkeit bietet, an anspruchsvollen Projekten zu arbeiten, die mit meinen beruflichen Zielen übereinstimmen${data.careerGoals ? ': ' + data.careerGoals : ''}. Ich freue mich darauf, meine einzigartige Perspektive und Expertise in Ihr Unternehmen einzubringen.
+      // Generate matching analysis with Ollama
+      const matching = await generateMatchingAnalysis(
+        data.jobDescription,
+        cvText,
+        data.motivation,
+        data.careerGoals
+      );
 
-Gerne würde ich in einem persönlichen Gespräch erläutern, wie mein Hintergrund, meine Fähigkeiten und meine Begeisterung zum Erfolg Ihres Teams beitragen können. Vielen Dank für die Berücksichtigung meiner Bewerbung.
-
-Mit freundlichen Grüßen,
-[Ihr Name]`;
-    
-    // Mock matching data
-    const mockMatchingData: MatchingData = {
-      overallScore: 85,
-      categories: [
-        {
-          name: "Fachliche Qualifikation",
-          score: 88,
-          description: "Ihre Skills und Erfahrungen passen hervorragend zu den technischen Anforderungen."
-        },
-        {
-          name: "Berufserfahrung",
-          score: 82,
-          description: "Ihre bisherige Karriere zeigt relevante Erfahrungen für diese Position."
-        },
-        {
-          name: "Kulturelle Passung",
-          score: 90,
-          description: "Ihre Werte und Arbeitsweise passen sehr gut zur Unternehmenskultur."
-        },
-        {
-          name: "Karriereziele",
-          score: 78,
-          description: "Die Position unterstützt Ihre langfristigen Karrierepläne gut."
-        }
-      ],
-      strengths: [
-        "Umfassende Erfahrung in den geforderten Hauptkompetenzen",
-        "Nachweisbare Erfolge in ähnlichen Projekten",
-        "Starke Kommunikationsfähigkeiten und Teamorientierung",
-        "Motivation und Begeisterung für die Position sind deutlich erkennbar"
-      ],
-      improvements: [
-        "Vertiefen Sie Ihr Wissen in spezifischen Nischentechnologien, die in der Stellenbeschreibung erwähnt wurden",
-        "Bereiten Sie konkrete Beispiele für Ihre Führungserfahrung vor",
-        "Informieren Sie sich detailliert über aktuelle Projekte des Unternehmens"
-      ],
-      interviewTips: [
-        "Bereiten Sie 2-3 konkrete Beispiele vor, wie Sie ähnliche Herausforderungen gemeistert haben",
-        "Zeigen Sie Ihre Kenntnisse über das Unternehmen und dessen Produkte/Dienstleistungen",
-        "Formulieren Sie klar, wie Sie in den ersten 90 Tagen einen Mehrwert schaffen würden",
-        "Bereiten Sie intelligente Fragen vor, die Ihr Interesse und Ihre Expertise demonstrieren"
-      ]
-    };
-    
-    setGeneratedLetter(mockLetter);
-    setMatchingData(mockMatchingData);
-    setIsGenerating(false);
+      setGeneratedLetter(letter);
+      setMatchingData(matching);
+      
+      toast({
+        title: "Erfolgreich generiert!",
+        description: "Ihr Anschreiben und die Matching-Analyse sind fertig.",
+      });
+    } catch (error) {
+      console.error("Fehler bei der Generierung:", error);
+      toast({
+        title: "Fehler",
+        description: error instanceof Error ? error.message : "Ein unerwarteter Fehler ist aufgetreten",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const handleReset = () => {
