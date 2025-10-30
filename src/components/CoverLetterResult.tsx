@@ -20,8 +20,8 @@ export const CoverLetterResult = ({ letter, matchingData, onReset }: CoverLetter
     navigator.clipboard.writeText(letter);
     setCopied(true);
     toast({
-      title: "In Zwischenablage kopiert",
-      description: "Ihr Anschreiben wurde in die Zwischenablage kopiert.",
+      title: "Copied to clipboard",
+      description: "Your cover letter has been copied to clipboard.",
     });
     setTimeout(() => setCopied(false), 2000);
   };
@@ -37,8 +37,8 @@ export const CoverLetterResult = ({ letter, matchingData, onReset }: CoverLetter
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     toast({
-      title: "Heruntergeladen",
-      description: "Ihr Anschreiben wurde heruntergeladen.",
+      title: "Downloaded",
+      description: "Your cover letter has been downloaded.",
     });
   };
 
@@ -73,17 +73,17 @@ export const CoverLetterResult = ({ letter, matchingData, onReset }: CoverLetter
           <div className="flex flex-wrap gap-4 justify-center">
             <Button onClick={handleCopy} variant="outline" size="lg">
               {copied ? <Check className="w-4 h-4 mr-2" /> : <Copy className="w-4 h-4 mr-2" />}
-              {copied ? "Kopiert!" : "In Zwischenablage kopieren"}
+              {copied ? "Copied!" : "Copy to Clipboard"}
             </Button>
             
             <Button onClick={handleDownload} variant="outline" size="lg">
               <Download className="w-4 h-4 mr-2" />
-              Als Text herunterladen
+              Download as Text
             </Button>
             
             <Button onClick={onReset} variant="default" size="lg">
               <RotateCcw className="w-4 h-4 mr-2" />
-              Neues erstellen
+              Create Another
             </Button>
           </div>
 

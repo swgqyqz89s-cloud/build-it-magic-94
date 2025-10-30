@@ -18,7 +18,7 @@ import {
 
 const formSchema = z.object({
   jobTitle: z.string().optional(),
-  jobDescription: z.string().min(10, "Die Stellenbeschreibung muss mindestens 10 Zeichen lang sein"),
+  jobDescription: z.string().min(10, "Job description must be at least 10 characters"),
   motivation: z.string().optional(),
   tone: z.string().default("professional"),
   careerGoals: z.string().optional(),
@@ -58,7 +58,7 @@ export const CoverLetterForm = ({ onGenerate, isGenerating }: CoverLetterFormPro
         {/* CV Upload */}
         <Card className="p-6 border-2 border-dashed hover:border-primary/50 transition-colors">
           <Label htmlFor="cv-upload" className="block mb-4 text-lg font-semibold">
-            Laden Sie Ihren Lebenslauf hoch
+            Upload Your CV
           </Label>
           <div className="flex items-center gap-4">
             <Input
@@ -75,7 +75,7 @@ export const CoverLetterForm = ({ onGenerate, isGenerating }: CoverLetterFormPro
               className="w-full justify-center gap-2"
             >
               <Upload className="w-4 h-4" />
-              {cvFile ? cvFile.name : "PDF-Datei auswählen"}
+              {cvFile ? cvFile.name : "Choose PDF file"}
             </Button>
           </div>
           {cvFile && (
@@ -89,20 +89,20 @@ export const CoverLetterForm = ({ onGenerate, isGenerating }: CoverLetterFormPro
         {/* Job Details */}
         <Card className="p-6 space-y-4">
           <div>
-            <Label htmlFor="jobTitle">Stellenbezeichnung (Optional)</Label>
+            <Label htmlFor="jobTitle">Job Title (Optional)</Label>
             <Input
               id="jobTitle"
-              placeholder="z.B. Senior Software Engineer"
+              placeholder="e.g., Senior Software Engineer"
               {...register("jobTitle")}
               className="mt-2"
             />
           </div>
 
           <div>
-            <Label htmlFor="jobDescription">Stellenbeschreibung *</Label>
+            <Label htmlFor="jobDescription">Job Description *</Label>
             <Textarea
               id="jobDescription"
-              placeholder="Fügen Sie hier die vollständige Stellenbeschreibung ein..."
+              placeholder="Paste the complete job description here..."
               {...register("jobDescription")}
               className="mt-2 min-h-[200px]"
             />
@@ -114,20 +114,20 @@ export const CoverLetterForm = ({ onGenerate, isGenerating }: CoverLetterFormPro
 
         {/* Additional Information */}
         <Card className="p-6 space-y-4">
-          <h3 className="text-lg font-semibold">Personalisieren Sie Ihr Anschreiben</h3>
+          <h3 className="text-lg font-semibold">Customize Your Letter</h3>
           
           <div>
-            <Label htmlFor="motivation">Persönliche Motivation (Optional)</Label>
+            <Label htmlFor="motivation">Personal Motivation (Optional)</Label>
             <Textarea
               id="motivation"
-              placeholder="Warum interessieren Sie sich für diese Position? Was begeistert Sie an dieser Gelegenheit?"
+              placeholder="Why are you interested in this position? What excites you about this opportunity?"
               {...register("motivation")}
               className="mt-2"
             />
           </div>
 
           <div>
-            <Label htmlFor="tone">Tonalität</Label>
+            <Label htmlFor="tone">Tone</Label>
             <Select 
               defaultValue="professional" 
               onValueChange={(value) => setValue("tone", value)}
@@ -136,19 +136,19 @@ export const CoverLetterForm = ({ onGenerate, isGenerating }: CoverLetterFormPro
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="professional">Professionell</SelectItem>
-                <SelectItem value="enthusiastic">Enthusiastisch</SelectItem>
-                <SelectItem value="formal">Förmlich</SelectItem>
-                <SelectItem value="creative">Kreativ</SelectItem>
+                <SelectItem value="professional">Professional</SelectItem>
+                <SelectItem value="enthusiastic">Enthusiastic</SelectItem>
+                <SelectItem value="formal">Formal</SelectItem>
+                <SelectItem value="creative">Creative</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div>
-            <Label htmlFor="careerGoals">Karriereziele (Optional)</Label>
+            <Label htmlFor="careerGoals">Career Goals (Optional)</Label>
             <Textarea
               id="careerGoals"
-              placeholder="Was sind Ihre Karriereziele? Wie passt diese Position in Ihre Pläne?"
+              placeholder="What are your career aspirations? How does this role fit into your plans?"
               {...register("careerGoals")}
               className="mt-2"
             />
@@ -166,10 +166,10 @@ export const CoverLetterForm = ({ onGenerate, isGenerating }: CoverLetterFormPro
             {isGenerating ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Wird generiert...
+                Generating...
               </>
             ) : (
-              "Anschreiben generieren"
+              "Generate Cover Letter"
             )}
           </Button>
         </div>
