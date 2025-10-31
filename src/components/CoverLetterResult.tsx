@@ -45,8 +45,8 @@ export const CoverLetterResult = ({ letter, matchingData, onReset }: CoverLetter
   return (
     <div className="container mx-auto px-4 py-12 max-w-6xl">
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold mb-2">Your Cover Letter is Ready!</h2>
-        <p className="text-muted-foreground">Review your personalized cover letter and matching analysis</p>
+        <h2 className="text-3xl font-bold mb-2">Ihr Cover Letter ist bereit!</h2>
+        <p className="text-muted-foreground">Überprüfen Sie Ihr personalisiertes Anschreiben und die Matching-Analyse</p>
       </div>
 
       <Tabs defaultValue="letter" className="w-full">
@@ -88,7 +88,7 @@ export const CoverLetterResult = ({ letter, matchingData, onReset }: CoverLetter
           </div>
 
           <div className="p-4 bg-muted/50 rounded-lg text-center text-sm text-muted-foreground">
-            💡 Tip: Review and personalize the letter before sending. Add specific examples from your experience!
+            💡 Tipp: Überprüfen und personalisieren Sie den Brief vor dem Versenden. Fügen Sie spezifische Beispiele aus Ihrer Erfahrung hinzu!
           </div>
         </TabsContent>
 
@@ -98,7 +98,7 @@ export const CoverLetterResult = ({ letter, matchingData, onReset }: CoverLetter
           <div className="flex justify-center mt-8">
             <Button onClick={onReset} variant="default" size="lg">
               <RotateCcw className="w-4 h-4 mr-2" />
-              Create New Cover Letter
+              Neues Cover Letter erstellen
             </Button>
           </div>
         </TabsContent>

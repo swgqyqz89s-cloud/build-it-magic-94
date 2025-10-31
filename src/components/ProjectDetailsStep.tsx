@@ -32,10 +32,10 @@ export const ProjectDetailsStep = ({ gapQuestions, onContinue, onBack }: Project
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <FileText className="h-6 w-6" />
-            Optimize Your Application
+            Optimierung Ihrer Bewerbung
           </CardTitle>
           <CardDescription>
-            Our AI has identified {gapQuestions.length} question{gapQuestions.length !== 1 ? 's' : ''} to complete and optimize your cover letter.
+            Unsere KI hat {gapQuestions.length} Frage{gapQuestions.length !== 1 ? 'n' : ''} identifiziert, um Ihr Bewerbungsschreiben zu vervollständigen und zu optimieren.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -50,16 +50,16 @@ export const ProjectDetailsStep = ({ gapQuestions, onContinue, onBack }: Project
                     <p className="text-sm text-muted-foreground mt-1">{question.context}</p>
                   )}
                   <p className="text-xs text-muted-foreground mt-1">
-                    Category: {question.category}
+                    Kategorie: {question.category}
                   </p>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor={`answer-${question.id}`} className="text-sm">
-                    Your Answer <span className="text-muted-foreground">(optional)</span>
+                    Ihre Antwort <span className="text-muted-foreground">(optional)</span>
                   </Label>
                   <Textarea
                     id={`answer-${question.id}`}
-                    placeholder="Enter your answer here..."
+                    placeholder="Ihre Antwort hier eingeben..."
                     value={answers[question.id] || ""}
                     onChange={(e) => setAnswers(prev => ({
                       ...prev,
@@ -73,10 +73,10 @@ export const ProjectDetailsStep = ({ gapQuestions, onContinue, onBack }: Project
 
             <div className="flex gap-3 pt-4">
               <Button type="button" variant="outline" onClick={onBack} className="flex-1">
-                Back
+                Zurück
               </Button>
               <Button type="submit" className="flex-1">
-                Continue to Generation
+                Weiter zur Generierung
                 <ChevronRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
