@@ -67,7 +67,7 @@ export async function generateGapQuestions(
     { role: "user", content: userPrompt },
   ];
 
-  const response = await chatWithOllama(messages);
+  const response = await chatWithOllama(messages, "llama3");
   
   // Extract JSON from response
   const jsonMatch = response.match(/\[[\s\S]*\]/);
@@ -109,7 +109,7 @@ Job Description: ${jobDescription}`;
     { role: "user", content: userPrompt },
   ];
 
-  return await chatWithOllama(messages);
+  return await chatWithOllama(messages, "llama3");
 }
 
 export async function generateMatchingAnalysis(
@@ -138,7 +138,7 @@ export async function generateMatchingAnalysis(
     { role: "user", content: userPrompt },
   ];
 
-  const response = await chatWithOllama(messages);
+  const response = await chatWithOllama(messages, "llama3");
   
   // Extract JSON from response
   const jsonMatch = response.match(/\{[\s\S]*\}/);
