@@ -18,27 +18,27 @@ const Index = () => {
     const mockQuestions: GapQuestion[] = [
       {
         id: "1",
-        question: "Welche konkreten Erfolge oder Ergebnisse haben Sie in Ihrer letzten Position erreicht?",
-        context: "Quantifizierbare Erfolge machen Ihre Bewerbung überzeugender",
-        category: "Berufserfahrung"
+        question: "What specific achievements or results have you accomplished in your last position?",
+        context: "Quantifiable achievements make your application more convincing",
+        category: "Professional Experience"
       },
       {
         id: "2",
-        question: "Warum interessieren Sie sich speziell für diese Position und unser Unternehmen?",
-        context: "Zeigen Sie Ihre Motivation und Recherche über das Unternehmen",
+        question: "Why are you specifically interested in this position and our company?",
+        context: "Show your motivation and research about the company",
         category: "Motivation"
       },
       {
         id: "3",
-        question: "Welche relevanten technischen Kenntnisse oder Zertifizierungen haben Sie?",
-        context: "Ergänzen Sie spezifische Skills, die in der Stellenbeschreibung erwähnt werden",
-        category: "Qualifikationen"
+        question: "What relevant technical skills or certifications do you have?",
+        context: "Add specific skills mentioned in the job description",
+        category: "Qualifications"
       },
       {
         id: "4",
-        question: "Können Sie ein Beispiel für eine komplexe Herausforderung nennen, die Sie gemeistert haben?",
-        context: "Konkrete Beispiele zeigen Ihre Problemlösungskompetenz",
-        category: "Erfahrung"
+        question: "Can you provide an example of a complex challenge you've mastered?",
+        context: "Concrete examples demonstrate your problem-solving competence",
+        category: "Experience"
       }
     ];
     
@@ -69,60 +69,60 @@ const Index = () => {
       .join(' ');
 
     // Mock generated cover letter
-    const mockLetter = `Sehr geehrte Damen und Herren,
+    const mockLetter = `Dear Hiring Manager,
 
-mit großem Interesse habe ich Ihre Stellenausschreibung für die Position als ${data.jobTitle || 'position'} gelesen und möchte mich hiermit bei Ihnen bewerben.
+I am writing to express my strong interest in the ${data.jobTitle || 'position'} role and to submit my application for your consideration.
 
-${data.motivation ? data.motivation + '\n\n' : ''}Im Laufe meiner Karriere habe ich ein vielfältiges Kompetenzprofil entwickelt, das hervorragend zu den in Ihrer Stellenbeschreibung genannten Anforderungen passt.${additionalContext ? ' ' + additionalContext : ''} Meine Erfahrung hat mich befähigt, mich schnell anzupassen, kritisch zu denken und in schnelllebigen Umgebungen Ergebnisse zu liefern.
+${data.motivation ? data.motivation + '\n\n' : ''}Throughout my career, I have developed a diverse skill set that aligns excellently with the requirements outlined in your job description.${additionalContext ? ' ' + additionalContext : ''} My experience has equipped me to adapt quickly, think critically, and deliver results in fast-paced environments.
 
-Diese Position spricht mich besonders an, da sie die Möglichkeit bietet, an anspruchsvollen Projekten zu arbeiten, die mit meinen beruflichen Zielen übereinstimmen${data.careerGoals ? ': ' + data.careerGoals : ''}. Ich freue mich darauf, meine einzigartige Perspektive und Expertise in Ihr Unternehmen einzubringen.
+This position particularly appeals to me as it offers the opportunity to work on challenging projects that align with my professional goals${data.careerGoals ? ': ' + data.careerGoals : ''}. I am excited about the prospect of bringing my unique perspective and expertise to your organization.
 
-Gerne würde ich in einem persönlichen Gespräch erläutern, wie mein Hintergrund, meine Fähigkeiten und meine Begeisterung zum Erfolg Ihres Teams beitragen können. Vielen Dank für die Berücksichtigung meiner Bewerbung.
+I would welcome the opportunity to discuss how my background, skills, and enthusiasm can contribute to your team's success. Thank you for considering my application.
 
-Mit freundlichen Grüßen,
-[Ihr Name]`;
+Sincerely,
+[Your Name]`;
     
     // Mock matching data
     const mockMatchingData: MatchingData = {
       overallScore: 85,
       categories: [
         {
-          name: "Fachliche Qualifikation",
+          name: "Professional Qualification",
           score: 88,
-          description: "Ihre Skills und Erfahrungen passen hervorragend zu den technischen Anforderungen."
+          description: "Your skills and experience align excellently with the technical requirements."
         },
         {
-          name: "Berufserfahrung",
+          name: "Professional Experience",
           score: 82,
-          description: "Ihre bisherige Karriere zeigt relevante Erfahrungen für diese Position."
+          description: "Your career history shows relevant experience for this position."
         },
         {
-          name: "Kulturelle Passung",
+          name: "Cultural Fit",
           score: 90,
-          description: "Ihre Werte und Arbeitsweise passen sehr gut zur Unternehmenskultur."
+          description: "Your values and work style fit very well with the company culture."
         },
         {
-          name: "Karriereziele",
+          name: "Career Goals",
           score: 78,
-          description: "Die Position unterstützt Ihre langfristigen Karrierepläne gut."
+          description: "This position supports your long-term career plans well."
         }
       ],
       strengths: [
-        "Umfassende Erfahrung in den geforderten Hauptkompetenzen",
-        "Nachweisbare Erfolge in ähnlichen Projekten",
-        "Starke Kommunikationsfähigkeiten und Teamorientierung",
-        "Motivation und Begeisterung für die Position sind deutlich erkennbar"
+        "Comprehensive experience in the required core competencies",
+        "Proven successes in similar projects",
+        "Strong communication skills and team orientation",
+        "Motivation and enthusiasm for the position are clearly evident"
       ],
       improvements: [
-        "Vertiefen Sie Ihr Wissen in spezifischen Nischentechnologien, die in der Stellenbeschreibung erwähnt wurden",
-        "Bereiten Sie konkrete Beispiele für Ihre Führungserfahrung vor",
-        "Informieren Sie sich detailliert über aktuelle Projekte des Unternehmens"
+        "Deepen your knowledge in specific niche technologies mentioned in the job description",
+        "Prepare concrete examples of your leadership experience",
+        "Research current company projects in detail"
       ],
       interviewTips: [
-        "Bereiten Sie 2-3 konkrete Beispiele vor, wie Sie ähnliche Herausforderungen gemeistert haben",
-        "Zeigen Sie Ihre Kenntnisse über das Unternehmen und dessen Produkte/Dienstleistungen",
-        "Formulieren Sie klar, wie Sie in den ersten 90 Tagen einen Mehrwert schaffen würden",
-        "Bereiten Sie intelligente Fragen vor, die Ihr Interesse und Ihre Expertise demonstrieren"
+        "Prepare 2-3 concrete examples of how you've mastered similar challenges",
+        "Demonstrate your knowledge about the company and its products/services",
+        "Clearly articulate how you would add value in the first 90 days",
+        "Prepare intelligent questions that demonstrate your interest and expertise"
       ]
     };
     

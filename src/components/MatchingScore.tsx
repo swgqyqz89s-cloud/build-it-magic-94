@@ -48,7 +48,7 @@ export const MatchingScore = ({ data }: MatchingScoreProps) => {
         </div>
         <p className="text-lg text-muted-foreground">Matching Score</p>
         <p className="text-sm text-muted-foreground mt-2">
-          Wie gut Sie zur ausgeschriebenen Stelle passen
+          How well you match the advertised position
         </p>
       </Card>
 
@@ -56,7 +56,7 @@ export const MatchingScore = ({ data }: MatchingScoreProps) => {
       <Card className="p-6">
         <h3 className="text-xl font-semibold mb-6 flex items-center gap-2">
           <TrendingUp className="w-5 h-5 text-primary" />
-          Detaillierte Analyse
+          Detailed Analysis
         </h3>
         <div className="space-y-6">
           {data.categories.map((category, index) => (
@@ -79,7 +79,7 @@ export const MatchingScore = ({ data }: MatchingScoreProps) => {
         <Card className="p-6">
           <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-green-600 dark:text-green-400">
             <CheckCircle2 className="w-5 h-5" />
-            Ihre Stärken
+            Your Strengths
           </h3>
           <ul className="space-y-3">
             {data.strengths.map((strength, index) => (
@@ -94,7 +94,7 @@ export const MatchingScore = ({ data }: MatchingScoreProps) => {
         <Card className="p-6">
           <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-orange-600 dark:text-orange-400">
             <AlertCircle className="w-5 h-5" />
-            Verbesserungspotenzial
+            Areas for Improvement
           </h3>
           <ul className="space-y-3">
             {data.improvements.map((improvement, index) => (
@@ -109,7 +109,7 @@ export const MatchingScore = ({ data }: MatchingScoreProps) => {
 
       {/* Interview Tips */}
       <Card className="p-6 bg-primary/5">
-        <h3 className="text-lg font-semibold mb-4">💡 Tipps für Ihr Bewerbungsgespräch</h3>
+        <h3 className="text-lg font-semibold mb-4">💡 Interview Tips</h3>
         <ul className="space-y-2">
           {data.interviewTips.map((tip, index) => (
             <li key={index} className="text-sm pl-4 border-l-2 border-primary py-1">
