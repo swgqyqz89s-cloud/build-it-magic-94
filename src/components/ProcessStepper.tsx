@@ -13,11 +13,11 @@ const steps = [
 
 export const ProcessStepper = ({ currentStep }: ProcessStepperProps) => {
   return (
-    <div className="w-full max-w-4xl mx-auto px-4 py-6 -mt-4">
-      <div className="flex items-center justify-between">
+    <div className="w-full max-w-2xl mx-auto px-4 py-6 -mt-4">
+      <div className="flex items-center justify-center gap-4">
         {steps.map((step, index) => (
-          <div key={step.id} className="flex items-center flex-1">
-            <div className="flex flex-col items-center flex-1">
+          <div key={step.id} className="flex items-center">
+            <div className="flex flex-col items-center min-w-[120px]">
               <div
                 className={cn(
                   "w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all",
@@ -44,7 +44,7 @@ export const ProcessStepper = ({ currentStep }: ProcessStepperProps) => {
               </span>
             </div>
             {index < steps.length - 1 && (
-              <div className="flex-1 h-0.5 mx-4 -mt-8">
+              <div className="w-20 h-0.5 mx-4 -mt-8">
                 <div
                   className={cn(
                     "h-full transition-all",
