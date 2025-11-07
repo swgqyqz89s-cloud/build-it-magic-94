@@ -2,12 +2,13 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Upload, FileText, Loader2 } from "lucide-react";
+import { Upload, FileText, Loader2, Link as LinkIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   Select,
   SelectContent,
@@ -18,11 +19,21 @@ import {
 
 const formSchema = z.object({
   jobTitle: z.string().optional(),
-  jobDescription: z.string().min(10, "Job description must be at least 10 characters"),
+  jobDescription: z.string().optional(),
+  jobDescriptionUrl: z.string().optional(),
   motivation: z.string().optional(),
   tone: z.string().default("professional"),
   careerGoals: z.string().optional(),
-});
+}).refine(
+  (data) => {
+    return (data.jobDescription && data.jobDescription.length >= 10) || 
+           (data.jobDescriptionUrl && data.jobDescriptionUrl.length > 0);
+  },
+  {
+    message: "Please provide either a job description or a job posting URL",
+    path: ["jobDescription"],
+  }
+);
 
 type FormData = z.infer<typeof formSchema>;
 
@@ -33,6 +44,7 @@ interface CoverLetterFormProps {
 
 export const CoverLetterForm = ({ onGenerate, isGenerating }: CoverLetterFormProps) => {
   const [cvFile, setCvFile] = useState<File | null>(null);
+  const [jobInputMode, setJobInputMode] = useState<"text" | "link">("text");
   
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -99,16 +111,40 @@ export const CoverLetterForm = ({ onGenerate, isGenerating }: CoverLetterFormPro
           </div>
 
           <div>
-            <Label htmlFor="jobDescription">Job Description *</Label>
-            <Textarea
-              id="jobDescription"
-              placeholder="Paste the complete job description here..."
-              {...register("jobDescription")}
-              className="mt-2 min-h-[200px]"
-            />
-            {errors.jobDescription && (
-              <p className="text-sm text-destructive mt-1">{errors.jobDescription.message}</p>
-            )}
+            <Label>Job Description *</Label>
+            <Tabs value={jobInputMode} onValueChange={(value) => setJobInputMode(value as "text" | "link")} className="mt-2">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="text">Paste Text</TabsTrigger>
+                <TabsTrigger value="link">
+                  <LinkIcon className="w-4 h-4 mr-2" />
+                  Enter Link
+                </TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="text" className="mt-4">
+                <Textarea
+                  id="jobDescription"
+                  placeholder="Paste the complete job description here..."
+                  {...register("jobDescription")}
+                  className="min-h-[200px]"
+                />
+                {errors.jobDescription && (
+                  <p className="text-sm text-destructive mt-1">{errors.jobDescription.message}</p>
+                )}
+              </TabsContent>
+              
+              <TabsContent value="link" className="mt-4">
+                <Input
+                  id="jobDescriptionUrl"
+                  type="url"
+                  placeholder="https://example.com/job-posting"
+                  {...register("jobDescriptionUrl")}
+                />
+                {errors.jobDescriptionUrl && (
+                  <p className="text-sm text-destructive mt-1">{errors.jobDescriptionUrl.message}</p>
+                )}
+              </TabsContent>
+            </Tabs>
           </div>
         </Card>
 
