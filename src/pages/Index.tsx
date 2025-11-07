@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Hero } from "@/components/Hero";
+import { ProcessStepper } from "@/components/ProcessStepper";
 import { CoverLetterForm } from "@/components/CoverLetterForm";
 import { CoverLetterResult } from "@/components/CoverLetterResult";
 import { MatchingData } from "@/components/MatchingScore";
@@ -58,6 +59,12 @@ const Index = () => {
     }
   };
 
+  const getCurrentStep = () => {
+    if (generatedLetter && matchingData) return 3;
+    if (gapQuestions) return 2;
+    return 1;
+  };
+
   const handleReset = () => {
     setGeneratedLetter(null);
     setMatchingData(null);
@@ -74,6 +81,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Hero />
+      <ProcessStepper currentStep={getCurrentStep()} />
       {!generatedLetter || !matchingData ? (
         !gapQuestions ? (
           <CoverLetterForm onGenerate={handleFormSubmit} isGenerating={isGenerating} />
