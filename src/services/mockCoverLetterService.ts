@@ -103,42 +103,29 @@ export const generateMatchingAnalysis = async (
   // Simulate AI analysis delay
   await new Promise(resolve => setTimeout(resolve, 2000));
   
-  // Mock matching data with weighted scoring
-  const qualifikationsMatch = 88;
-  const erfahrungsRelevanz = 82;
-  const kulturFit = 90;
-  const zielFit = 78;
-  
-  // Calculate weighted overall score: 0.35 * Qualifikation + 0.30 * Erfahrung + 0.20 * Kultur + 0.15 * Ziel
-  const overallScore = Math.round(
-    0.35 * qualifikationsMatch + 
-    0.30 * erfahrungsRelevanz + 
-    0.20 * kulturFit + 
-    0.15 * zielFit
-  );
-  
+  // Mock matching data
   return {
-    overallScore,
+    overallScore: 85,
     categories: [
       {
-        name: "Qualifikations-Match-Rate",
-        score: qualifikationsMatch,
-        description: "Anteil der geforderten Hard Skills, die im Bewerberprofil erkannt wurden (erkannte Skills / geforderte Skills)."
+        name: "Professional Qualification",
+        score: 88,
+        description: "Your skills and experience align excellently with the technical requirements."
       },
       {
-        name: "Erfahrungs-Relevanz-Score",
-        score: erfahrungsRelevanz,
-        description: "Übereinstimmung der nachweisbaren Aufgaben und Verantwortlichkeiten mit der Stellenbeschreibung inkl. Senioritäts-Fit."
+        name: "Professional Experience",
+        score: 82,
+        description: "Your career history shows relevant experience for this position."
       },
       {
-        name: "Kultur-Fit-Indikator",
-        score: kulturFit,
-        description: "Übereinstimmung zwischen erkannten Soft Skills, Werten und den Kulturstichwörtern der Stellenanzeige."
+        name: "Cultural Fit",
+        score: 90,
+        description: "Your values and work style fit very well with the company culture."
       },
       {
-        name: "Ziel-Fit-Score",
-        score: zielFit,
-        description: "Vergleich der langfristigen Karriereziele mit den Entwicklungsmöglichkeiten der ausgeschriebenen Stelle."
+        name: "Career Goals",
+        score: 78,
+        description: "This position supports your long-term career plans well."
       }
     ],
     strengths: [
