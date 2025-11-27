@@ -5,6 +5,7 @@ import * as z from "zod";
 import { Upload, FileText, Loader2, Link as LinkIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { extractTextFromPDF } from "@/utils/pdfParser";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -50,6 +51,8 @@ export const CoverLetterForm = ({ onGenerate, isGenerating }: CoverLetterFormPro
   const [cvText, setCvText] = useState<string>("");
   const [isExtractingPdf, setIsExtractingPdf] = useState(false);
   const [jobInputMode, setJobInputMode] = useState<"text" | "link">("text");
+  const [isFetchingUrl, setIsFetchingUrl] = useState(false);
+  const [urlInputValue, setUrlInputValue] = useState("");
   const { toast } = useToast();
   
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<FormData>({
@@ -82,6 +85,44 @@ export const CoverLetterForm = ({ onGenerate, isGenerating }: CoverLetterFormPro
       } finally {
         setIsExtractingPdf(false);
       }
+    }
+  };
+
+  const handleFetchUrl = async () => {
+    if (!urlInputValue) {
+      toast({
+        title: "URL erforderlich",
+        description: "Bitte geben Sie eine URL ein",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsFetchingUrl(true);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('fetch-job-description', {
+        body: { url: urlInputValue },
+      });
+
+      if (error) throw error;
+
+      if (data.text) {
+        setValue("jobDescription", data.text);
+        toast({
+          title: "URL erfolgreich geladen",
+          description: `${data.text.split(' ').length} Wörter extrahiert`,
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching URL:', error);
+      toast({
+        title: "Fehler beim Laden der URL",
+        description: "Bitte versuchen Sie es erneut",
+        variant: "destructive",
+      });
+    } finally {
+      setIsFetchingUrl(false);
     }
   };
 
@@ -179,12 +220,33 @@ export const CoverLetterForm = ({ onGenerate, isGenerating }: CoverLetterFormPro
               </TabsContent>
               
               <TabsContent value="link" className="mt-4">
-                <Input
-                  id="jobDescriptionUrl"
-                  type="url"
-                  placeholder="https://example.com/job-posting"
-                  {...register("jobDescriptionUrl")}
-                />
+                <div className="flex gap-2">
+                  <Input
+                    id="jobDescriptionUrl"
+                    type="url"
+                    placeholder="https://example.com/job-posting"
+                    value={urlInputValue}
+                    onChange={(e) => {
+                      setUrlInputValue(e.target.value);
+                      setValue("jobDescriptionUrl", e.target.value);
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    onClick={handleFetchUrl}
+                    disabled={isFetchingUrl}
+                    className="min-w-[120px]"
+                  >
+                    {isFetchingUrl ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Laden...
+                      </>
+                    ) : (
+                      'Laden'
+                    )}
+                  </Button>
+                </div>
                 {errors.jobDescriptionUrl && (
                   <p className="text-sm text-destructive mt-1">{errors.jobDescriptionUrl.message}</p>
                 )}
