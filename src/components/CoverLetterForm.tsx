@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { GlobalWorkerOptions, getDocument } from "pdfjs-dist";
-import pdfWorker from "pdfjs-dist/build/pdf.worker.min.mjs";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -20,7 +19,7 @@ import {
 } from "@/components/ui/select";
 
 if (typeof window !== "undefined") {
-  GlobalWorkerOptions.workerSrc = pdfWorker;
+  GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/5.4.394/pdf.worker.min.mjs`;
 }
 
 const isValidUrl = (value?: string | null) => {
