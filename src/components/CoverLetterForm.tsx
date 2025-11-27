@@ -3,9 +3,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Upload, FileText, Loader2, Link as LinkIcon } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { extractTextFromPDF } from "@/utils/pdfParser";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -27,7 +24,6 @@ const formSchema = z.object({
   motivation: z.string().optional(),
   tone: z.string().default("professional"),
   careerGoals: z.string().optional(),
-  cvText: z.string().optional(),
 }).refine(
   (data) => {
     return (data.jobDescription && data.jobDescription.length >= 10) || 
@@ -48,12 +44,7 @@ interface CoverLetterFormProps {
 
 export const CoverLetterForm = ({ onGenerate, isGenerating }: CoverLetterFormProps) => {
   const [cvFile, setCvFile] = useState<File | null>(null);
-  const [cvText, setCvText] = useState<string>("");
-  const [isExtractingPdf, setIsExtractingPdf] = useState(false);
   const [jobInputMode, setJobInputMode] = useState<"text" | "link">("text");
-  const [isFetchingUrl, setIsFetchingUrl] = useState(false);
-  const [urlInputValue, setUrlInputValue] = useState("");
-  const { toast } = useToast();
   
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -62,72 +53,15 @@ export const CoverLetterForm = ({ onGenerate, isGenerating }: CoverLetterFormPro
     },
   });
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && file.type === "application/pdf") {
       setCvFile(file);
-      setIsExtractingPdf(true);
-      
-      try {
-        const text = await extractTextFromPDF(file);
-        setCvText(text);
-        toast({
-          title: "PDF erfolgreich verarbeitet",
-          description: `${text.split(' ').length} Wörter extrahiert`,
-        });
-      } catch (error) {
-        toast({
-          title: "Fehler beim Verarbeiten der PDF",
-          description: "Bitte versuchen Sie es erneut",
-          variant: "destructive",
-        });
-        setCvFile(null);
-      } finally {
-        setIsExtractingPdf(false);
-      }
-    }
-  };
-
-  const handleFetchUrl = async () => {
-    if (!urlInputValue) {
-      toast({
-        title: "URL erforderlich",
-        description: "Bitte geben Sie eine URL ein",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsFetchingUrl(true);
-    
-    try {
-      const { data, error } = await supabase.functions.invoke('fetch-job-description', {
-        body: { url: urlInputValue },
-      });
-
-      if (error) throw error;
-
-      if (data.text) {
-        setValue("jobDescription", data.text);
-        toast({
-          title: "URL erfolgreich geladen",
-          description: `${data.text.split(' ').length} Wörter extrahiert`,
-        });
-      }
-    } catch (error) {
-      console.error('Error fetching URL:', error);
-      toast({
-        title: "Fehler beim Laden der URL",
-        description: "Bitte versuchen Sie es erneut",
-        variant: "destructive",
-      });
-    } finally {
-      setIsFetchingUrl(false);
     }
   };
 
   const onSubmit = (data: FormData) => {
-    onGenerate({ ...data, cvText });
+    onGenerate(data);
   };
 
   return (
@@ -151,35 +85,15 @@ export const CoverLetterForm = ({ onGenerate, isGenerating }: CoverLetterFormPro
               variant="outline"
               onClick={() => document.getElementById("cv-upload")?.click()}
               className="w-full justify-center gap-2"
-              disabled={isExtractingPdf}
             >
-              {isExtractingPdf ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  PDF wird verarbeitet...
-                </>
-              ) : (
-                <>
-                  <Upload className="w-4 h-4" />
-                  {cvFile ? cvFile.name : "PDF-Datei wählen"}
-                </>
-              )}
+              <Upload className="w-4 h-4" />
+              {cvFile ? cvFile.name : "Choose PDF file"}
             </Button>
           </div>
-          {cvFile && cvText && (
-            <div className="mt-4 space-y-2">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <FileText className="w-4 h-4" />
-                <span>{cvFile.name} ({cvText.split(' ').length} Wörter extrahiert)</span>
-              </div>
-              <details className="text-xs">
-                <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
-                  Extrahierten Text anzeigen
-                </summary>
-                <pre className="mt-2 p-2 bg-muted rounded-md max-h-40 overflow-y-auto whitespace-pre-wrap">
-                  {cvText.substring(0, 500)}...
-                </pre>
-              </details>
+          {cvFile && (
+            <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
+              <FileText className="w-4 h-4" />
+              <span>{cvFile.name}</span>
             </div>
           )}
         </Card>
@@ -220,33 +134,12 @@ export const CoverLetterForm = ({ onGenerate, isGenerating }: CoverLetterFormPro
               </TabsContent>
               
               <TabsContent value="link" className="mt-4">
-                <div className="flex gap-2">
-                  <Input
-                    id="jobDescriptionUrl"
-                    type="url"
-                    placeholder="https://example.com/job-posting"
-                    value={urlInputValue}
-                    onChange={(e) => {
-                      setUrlInputValue(e.target.value);
-                      setValue("jobDescriptionUrl", e.target.value);
-                    }}
-                  />
-                  <Button
-                    type="button"
-                    onClick={handleFetchUrl}
-                    disabled={isFetchingUrl}
-                    className="min-w-[120px]"
-                  >
-                    {isFetchingUrl ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Laden...
-                      </>
-                    ) : (
-                      'Laden'
-                    )}
-                  </Button>
-                </div>
+                <Input
+                  id="jobDescriptionUrl"
+                  type="url"
+                  placeholder="https://example.com/job-posting"
+                  {...register("jobDescriptionUrl")}
+                />
                 {errors.jobDescriptionUrl && (
                   <p className="text-sm text-destructive mt-1">{errors.jobDescriptionUrl.message}</p>
                 )}
