@@ -11,10 +11,11 @@ export interface GapQuestion {
 export interface FormData {
   jobTitle?: string;
   jobDescription?: string;
+  jobDescriptionUrl?: string;
   motivation?: string;
   tone: string;
   careerGoals?: string;
-  // TODO: später cvText?: string, wenn du CV-PDFs wirklich ausliest.
+  cvText?: string;
 }
 
 // Shape, das vom MatchingScore-Component erwartet wird
@@ -106,11 +107,19 @@ function extractJson<T>(text: string): T {
 // Prompt für Schritt 1 (Fragen generieren)
 // -----------------------------
 function buildGapQuestionPrompt(formData: FormData): string {
-  const jobTitle = formData.jobTitle || "";
-  const jobDescription = formData.jobDescription || "";
+  const jobTitle = formData.jobTitle?.trim() || "";
+  const jobDescription = formData.jobDescription?.trim() || "";
+  const jobDescriptionUrl = formData.jobDescriptionUrl || "";
   const motivation = formData.motivation || "";
   const careerGoals = formData.careerGoals || "";
   const tone = formData.tone || "professional";
+  const cvText = formData.cvText?.trim() || "Not provided.";
+
+  const jobDescriptionSection = jobDescription?.trim()
+    ? jobDescription
+    : jobDescriptionUrl
+      ? `Provided via URL: ${jobDescriptionUrl}`
+      : "Not provided.";
 
   return `
 You are an AI career assistant specialized in writing personalized, job-specific cover letters. 
@@ -150,18 +159,21 @@ Valid categories:
 
 Here is the user input from the “Create Cover Letter” form. 
 
-CV (text extracted from PDF): 
-""" 
-{{cv_text}} 
-""" 
+CV (text extracted from PDF):
+"""
+${cvText}
+"""
 
-Job Title (optional): 
-${jobTitle} 
+Job Title (optional):
+${jobTitle}
 
-Job Description (required): 
-""" 
-${jobDescription} 
-""" 
+Job Description (required):
+"""
+${jobDescriptionSection}
+"""
+
+Job Posting URL (optional):
+${jobDescriptionUrl}
 
 Personal Motivation (optional): 
 """ 
@@ -202,11 +214,18 @@ function buildCoverLetterPrompt(
   formData: FormData,
   qaBlock: { id: string; question: string; answer: string }[],
 ): string {
-  const jobTitle = formData.jobTitle || "";
-  const jobDescription = formData.jobDescription || "";
+  const jobTitle = formData.jobTitle?.trim() || "";
+  const jobDescription = formData.jobDescription?.trim() || "";
+  const jobDescriptionUrl = formData.jobDescriptionUrl || "";
   const motivation = formData.motivation || "";
   const careerGoals = formData.careerGoals || "";
   const tone = formData.tone || "professional";
+  const cvText = formData.cvText?.trim() || "Not provided.";
+  const jobDescriptionSection = jobDescription?.trim()
+    ? jobDescription
+    : jobDescriptionUrl
+      ? `Provided via URL: ${jobDescriptionUrl}`
+      : "Not provided.";
 
   const qaJson = JSON.stringify(qaBlock, null, 2);
 
@@ -278,11 +297,11 @@ and a matching score.
 
   
 
-CV TEXT: 
+CV TEXT:
 
 """ 
 
-{{cv_text}} 
+${cvText}
 
 """ 
 
@@ -302,7 +321,17 @@ ${jobDescription}
 
 """ 
 
-  
+JOB DESCRIPTION (required):
+
+"""
+
+${jobDescriptionSection}
+
+"""
+
+JOB POSTING URL (optional):
+
+${jobDescriptionUrl}
 
 PERSONAL MOTIVATION (optional): 
 
