@@ -11,10 +11,12 @@ export interface GapQuestion {
 export interface FormData {
   jobTitle: string;
   jobDescription: string;
+  jobDescriptionUrl?: string;
   motivation?: string;
   tone: string;
   careerGoals?: string;
   cvFile?: File;
+  cvText?: string;
 }
 
 export interface CategoryScore {
@@ -81,12 +83,15 @@ export const generateCoverLetter = async (
     })
     .join(' ');
 
+  // Include CV context if available
+  const cvContext = formData.cvText ? `\n\nBased on my CV, which includes: ${formData.cvText.substring(0, 200)}...` : '';
+  
   // Mock generated cover letter
   return `Dear Hiring Manager,
 
 I am writing to express my strong interest in the ${formData.jobTitle || 'position'} role and to submit my application for your consideration.
 
-${formData.motivation ? formData.motivation + '\n\n' : ''}Throughout my career, I have developed a diverse skill set that aligns excellently with the requirements outlined in your job description.${additionalContext ? ' ' + additionalContext : ''} My experience has equipped me to adapt quickly, think critically, and deliver results in fast-paced environments.
+${formData.motivation ? formData.motivation + '\n\n' : ''}Throughout my career, I have developed a diverse skill set that aligns excellently with the requirements outlined in your job description.${additionalContext ? ' ' + additionalContext : ''} My experience has equipped me to adapt quickly, think critically, and deliver results in fast-paced environments.${cvContext}
 
 This position particularly appeals to me as it offers the opportunity to work on challenging projects that align with my professional goals${formData.careerGoals ? ': ' + formData.careerGoals : ''}. I am excited about the prospect of bringing my unique perspective and expertise to your organization.
 
