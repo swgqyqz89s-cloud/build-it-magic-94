@@ -16,11 +16,11 @@ const Index = () => {
   const [generatedLetter, setGeneratedLetter] = useState<string | null>(null);
   const [matchingData, setMatchingData] = useState<MatchingData | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [formData, setFormData] = useState<any>(null);
+  const [formData, setFormData] = useState<ServiceFormData | null>(null);
   const [gapQuestions, setGapQuestions] = useState<GapQuestion[] | null>(null);
   const [questionAnswers, setQuestionAnswers] = useState<Record<string, string>>({});
 
-  const handleFormSubmit = async (data: any) => {
+  const handleFormSubmit = async (data: ServiceFormData) => {
     setIsGenerating(true);
     try {
       // Generate gap questions using mock service
@@ -39,7 +39,9 @@ const Index = () => {
     await handleGenerate(formData, answers);
   };
 
-  const handleGenerate = async (data: any, answers: Record<string, string> = {}) => {
+  const handleGenerate = async (data: ServiceFormData | null, answers: Record<string, string> = {}) => {
+    if (!data) return;    
+    
     setIsGenerating(true);
     setGeneratedLetter(null);
     setMatchingData(null);
