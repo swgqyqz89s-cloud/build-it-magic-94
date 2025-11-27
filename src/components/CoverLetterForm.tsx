@@ -3,6 +3,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Upload, FileText, Loader2, Link as LinkIcon } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { extractTextFromPDF } from "@/utils/pdfParser";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -24,6 +26,7 @@ const formSchema = z.object({
   motivation: z.string().optional(),
   tone: z.string().default("professional"),
   careerGoals: z.string().optional(),
+  cvText: z.string().optional(),
 }).refine(
   (data) => {
     return (data.jobDescription && data.jobDescription.length >= 10) || 
@@ -44,7 +47,10 @@ interface CoverLetterFormProps {
 
 export const CoverLetterForm = ({ onGenerate, isGenerating }: CoverLetterFormProps) => {
   const [cvFile, setCvFile] = useState<File | null>(null);
+  const [cvText, setCvText] = useState<string>("");
+  const [isExtractingPdf, setIsExtractingPdf] = useState(false);
   const [jobInputMode, setJobInputMode] = useState<"text" | "link">("text");
+  const { toast } = useToast();
   
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -53,15 +59,34 @@ export const CoverLetterForm = ({ onGenerate, isGenerating }: CoverLetterFormPro
     },
   });
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && file.type === "application/pdf") {
       setCvFile(file);
+      setIsExtractingPdf(true);
+      
+      try {
+        const text = await extractTextFromPDF(file);
+        setCvText(text);
+        toast({
+          title: "PDF erfolgreich verarbeitet",
+          description: `${text.split(' ').length} Wörter extrahiert`,
+        });
+      } catch (error) {
+        toast({
+          title: "Fehler beim Verarbeiten der PDF",
+          description: "Bitte versuchen Sie es erneut",
+          variant: "destructive",
+        });
+        setCvFile(null);
+      } finally {
+        setIsExtractingPdf(false);
+      }
     }
   };
 
   const onSubmit = (data: FormData) => {
-    onGenerate(data);
+    onGenerate({ ...data, cvText });
   };
 
   return (
@@ -85,15 +110,35 @@ export const CoverLetterForm = ({ onGenerate, isGenerating }: CoverLetterFormPro
               variant="outline"
               onClick={() => document.getElementById("cv-upload")?.click()}
               className="w-full justify-center gap-2"
+              disabled={isExtractingPdf}
             >
-              <Upload className="w-4 h-4" />
-              {cvFile ? cvFile.name : "Choose PDF file"}
+              {isExtractingPdf ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  PDF wird verarbeitet...
+                </>
+              ) : (
+                <>
+                  <Upload className="w-4 h-4" />
+                  {cvFile ? cvFile.name : "PDF-Datei wählen"}
+                </>
+              )}
             </Button>
           </div>
-          {cvFile && (
-            <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
-              <FileText className="w-4 h-4" />
-              <span>{cvFile.name}</span>
+          {cvFile && cvText && (
+            <div className="mt-4 space-y-2">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <FileText className="w-4 h-4" />
+                <span>{cvFile.name} ({cvText.split(' ').length} Wörter extrahiert)</span>
+              </div>
+              <details className="text-xs">
+                <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
+                  Extrahierten Text anzeigen
+                </summary>
+                <pre className="mt-2 p-2 bg-muted rounded-md max-h-40 overflow-y-auto whitespace-pre-wrap">
+                  {cvText.substring(0, 500)}...
+                </pre>
+              </details>
             </div>
           )}
         </Card>
